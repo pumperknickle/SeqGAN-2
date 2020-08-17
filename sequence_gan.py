@@ -17,7 +17,7 @@ SEQ_LENGTH = 20 # sequence length
 START_TOKEN = 0
 PRE_EPOCH_NUM = 120 # supervise (maximum likelihood estimation) epochs
 SEED = 88
-BATCH_SIZE = 64
+BATCH_SIZE = 4
 
 #########################################################################################
 #  Discriminator  Hyper-parameters
@@ -27,15 +27,15 @@ dis_filter_sizes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20]
 dis_num_filters = [100, 200, 200, 200, 200, 100, 100, 100, 100, 100, 160, 160]
 dis_dropout_keep_prob = 0.75
 dis_l2_reg_lambda = 0.2
-dis_batch_size = 64
+dis_batch_size = 4
 
 #########################################################################################
 #  Basic Training Parameters
 #########################################################################################
 TOTAL_BATCH = 200
-positive_file = 'save/real_data.txt'
-negative_file = 'save/generator_sample.txt'
-eval_file = 'save/eval_file.txt'
+positive_file = 'real_data.txt'
+negative_file = 'generator_sample.txt'
+eval_file = 'eval_file.txt'
 generated_num = 10000
 
 
@@ -48,6 +48,7 @@ def generate_samples(sess, trainable_model, batch_size, generated_num, output_fi
     with open(output_file, 'w') as fout:
         for poem in generated_samples:
             buffer = ' '.join([str(x) for x in poem]) + '\n'
+            print(buffer)
             fout.write(buffer)
 
 
@@ -101,7 +102,6 @@ def main():
     sess.run(tf.global_variables_initializer())
 
     # First, use the oracle model to provide the positive examples, which are sampled from the oracle data distribution
-    generate_samples(sess, target_lstm, BATCH_SIZE, generated_num, positive_file)
     gen_data_loader.create_batches(positive_file)
 
     log = open('save/experiment-log.txt', 'w')
@@ -120,7 +120,7 @@ def main():
 
     print 'Start pre-training discriminator...'
     # Train 3 epoch on the generated data and do this for 50 times
-    for _ in range(50):
+    for _ in range(3):
         generate_samples(sess, generator, BATCH_SIZE, generated_num, negative_file)
         dis_data_loader.load_train_data(positive_file, negative_file)
         for _ in range(3):
