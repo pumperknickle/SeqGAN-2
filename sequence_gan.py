@@ -36,7 +36,7 @@ TOTAL_BATCH = 200
 positive_file = 'real_data.txt'
 negative_file = 'generator_sample.txt'
 eval_file = 'eval_file.txt'
-generated_num = 10000
+generated_num = 317
 
 
 def generate_samples(sess, trainable_model, batch_size, generated_num, output_file):
@@ -120,7 +120,7 @@ def main():
 
     print 'Start pre-training discriminator...'
     # Train 3 epoch on the generated data and do this for 50 times
-    for _ in range(3):
+    for _ in range(50):
         generate_samples(sess, generator, BATCH_SIZE, generated_num, negative_file)
         dis_data_loader.load_train_data(positive_file, negative_file)
         for _ in range(3):
